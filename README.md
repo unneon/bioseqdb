@@ -1,5 +1,7 @@
 # BioSeqDB
 
+**Note: This project is work in progress (very early stage), not intended for production use**
+
 ## Building
 
 ### Requiements
