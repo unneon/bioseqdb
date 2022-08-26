@@ -1,31 +1,38 @@
 name: CI
 on: [push]
 jobs:
-  build_and_test:
-    name: Build and test
+  test:
+    name: Test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Install Postgres
         run: sudo apt-get install -y postgresql postgresql-server-dev-all libpq-dev
-      - name: Install SeqLib (cache)
-        id: cache-install-seqlib
+      - name: Install bioinformatics libraries (cache)
+        id: cache-bioinformatics
         uses: actions/cache@v3
         with:
-          path: cache-seqlib
-          key: install-seqlib-v3
-      - name: Install SeqLib (build)
-        if: steps.cache-install-seqlib.outputs.cache-hit != 'true'
+          path: cache-bioinformatics
+          key: v1
+      - name: Install bioinformatics libraries (build)
+        if: steps.cache-bioinformatics.outputs.cache-hit != 'true'
         run: >
-          git clone --recursive https://github.com/walaj/SeqLib.git &&
-          cd SeqLib &&
-          ./configure &&
-          make CFLAGS='-g -Wall -O2 -fPIC' CXXFLAGS='-g -Wall -O2 -fPIC' &&
-          make install &&
-          mkdir -p ../cache-seqlib/lib ../cache-seqlib/include &&
-          cp lib/* ../cache-seqlib/lib/ &&
-          find bwa htslib -name "*.h" | xargs cp --parents -t ../cache-seqlib/include/
-      - name: Install SeqLib (install)
-        run: sudo cp -r cache-seqlib/* /usr/local/
+          git clone --depth 1 --single-branch --branch 1.5 --recursive "https://github.com/samtools/htslib.git" &&
+          git clone --depth 1 --single-branch "https://github.com/lh3/bwa.git" &&
+          cd htslib && autoreconf -i && ./configure && make CFLAGS="-g -O2 -fPIC" lib-static && cd .. &&
+          cd bwa && make CFLAGS="-g -O2 -fPIC" libbwa.a && cd .. &&
+          mkdir -p cache-bioinformatics/lib cache-bioinformatics/include &&
+          cp htslib/libhts.a bwa/libbwa.a cache-bioinformatics/lib &&
+          find bwa htslib -name "*.h" | xargs cp --parents -t cache-bioinformatics/include
+      - name: Install bioinformatics libraries (install)
+        run: sudo cp -r cache-bioinformatics/* /usr/local/
       - name: Build Postgres extension
         run: mkdir build && cd build && cmake .. && make
+  docker:
+    name: Docker
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build Docker image
+        run: docker build -t bioseqdb .
