@@ -17,7 +17,7 @@ void check_pg(PGconn* connection, PGresult* result) {
 
 int main(int argc, char* argv[]) {
     if (argc != 5) {
-        std::cerr << "\x1B[1;31merror:\x1B[0m invalid command-line arguments\n\x1B[1;34musage:\x1B[0m " << argv[0] << " <TABLE> <NAME COLUMN> <SEQUENCE COLUMN> <FASTA FILE> <POSTGRES URL>\n";
+        std::cerr << "\x1B[1;31merror:\x1B[0m invalid command-line arguments\n\x1B[1;34musage:\x1B[0m " << argv[0] << " <TABLE> <NAME COLUMN> <SEQUENCE COLUMN> <FASTA FILE>\n";
         return 1;
     }
 
