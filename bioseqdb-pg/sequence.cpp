@@ -64,7 +64,6 @@ NucleotideSequence* alloc_raw_nucls(uint32_t holes_num, uint32_t len) {
     SET_VARSIZE(ptr, size);
     ptr->holes_num = holes_num;
     ptr->len = len;
-    ptr->padded_len = pac_byte_size(len) * 4;
 
     return ptr;
 }
@@ -154,7 +153,7 @@ NucleotideSequence* NucleotideSequence::reverse() const {
             pac_raw_set(rev_pac, j, rng() & 0b11);
     }
 
-    for(uint32_t i = len; i < padded_len ; i++)
+    for(uint32_t i = len; i < pac_byte_size(len) * 4 ; i++)
         pac_raw_set(rev_pac, i, rng() & 0b11);
 
     return rev_nucls;
@@ -239,7 +238,7 @@ NucleotideSequence* nuclseq_from_text(std::string_view str) {
         prev_chr = chr;
     }
 
-    for(uint32_t i = nucls->len ; i < nucls->padded_len ; i++)
+    for(uint32_t i = nucls->len ; i < pac_byte_size(nucls->len) * 4 ; i++)
         pac_raw_set(pac, i, rng() & 0b11);
 
     return nucls;

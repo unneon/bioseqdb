@@ -34,7 +34,6 @@ struct NucleotideSequence {
     char vl_len[4];
     uint32_t holes_num;
     uint32_t len;
-    uint32_t padded_len;
     ubyte_t data[];
 };
 
