@@ -166,20 +166,25 @@ char* NucleotideSequence::to_text_palloc() const {
     return text;
 }
 
-char* NucleotideSequence::to_text_malloc() const {
-    auto text = reinterpret_cast<char*>(malloc(len + 1));
-    inplace_to_text(*this, text);
-    return text;
+int NucleotideSequence::compare(const NucleotideSequence& lhs, const NucleotideSequence& rhs) {
+    for (size_t i = 0; i < lhs.len && i < rhs.len; ++i) {
+        uint8_t left_nucl = pac_raw_get(lhs.pac(), i);
+        uint8_t right_nucl = pac_raw_get(rhs.pac(), i);
+        if (left_nucl < right_nucl)
+            return -1;
+        else if (left_nucl > right_nucl)
+            return 1;
+    }
+    if (lhs.len < rhs.len)
+        return -1;
+    else if (lhs.len == rhs.len)
+        return 0;
+    else
+        return 1;
 }
 
 bool operator==(const NucleotideSequence& left, const NucleotideSequence& right) {
-    // TODO: Optimize to avoid allocating.
-    char* left_str = left.to_text_malloc();
-    char* right_str = right.to_text_malloc();
-    bool equal = strcmp(left_str, right_str) == 0;
-    free(left_str);
-    free(right_str);
-    return equal;
+    return NucleotideSequence::compare(left, right) == 0;
 }
 
 bool operator!=(const NucleotideSequence& left, const NucleotideSequence& right) {
@@ -187,13 +192,7 @@ bool operator!=(const NucleotideSequence& left, const NucleotideSequence& right)
 }
 
 bool operator<(const NucleotideSequence& left, const NucleotideSequence& right) {
-    // TODO: Optimize to avoid allocating.
-    char* left_str = left.to_text_malloc();
-    char* right_str = right.to_text_malloc();
-    bool less = strcmp(left_str, right_str) < 0;
-    free(left_str);
-    free(right_str);
-    return less;
+    return NucleotideSequence::compare(left, right) < 0;
 }
 
 bool operator<=(const NucleotideSequence& left, const NucleotideSequence& right) {

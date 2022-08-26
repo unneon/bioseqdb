@@ -110,13 +110,7 @@ PG_FUNCTION_INFO_V1(nuclseq_cmp);
 Datum nuclseq_cmp(PG_FUNCTION_ARGS) {
     auto lhs = reinterpret_cast<const NucleotideSequence*>(PG_DETOAST_DATUM(PG_GETARG_POINTER(0)));
     auto rhs = reinterpret_cast<const NucleotideSequence*>(PG_DETOAST_DATUM(PG_GETARG_POINTER(1)));
-    // TODO: Optimize to avoid comparing twice.
-    if (*lhs < *rhs)
-        PG_RETURN_INT32(-1);
-    else if (*lhs == *rhs)
-        PG_RETURN_INT32(0);
-    else
-        PG_RETURN_INT32(1);
+    PG_RETURN_INT32(NucleotideSequence::compare(*lhs, *rhs));
 }
 
 PG_FUNCTION_INFO_V1(nuclseq_len);

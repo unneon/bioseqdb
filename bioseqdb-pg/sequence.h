@@ -28,8 +28,8 @@ struct NucleotideSequence {
     NucleotideSequence* complement() const;
     NucleotideSequence* reverse() const;
     char* to_text_palloc() const;
-    char* to_text_malloc() const;
 
+    static int compare(const NucleotideSequence& lhs, const NucleotideSequence& rhs);
 
     char vl_len[4];
     uint32_t holes_num;
