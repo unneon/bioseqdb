@@ -1,2 +1,2 @@
 default_version = '0.0.0'
-module_pathname = '$libdir/libbioseqdb_pg.so'
+module_pathname = '$libdir/libbioseqdb-pg.so'

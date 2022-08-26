@@ -1,4 +1,4 @@
 *
-!/bioseqdb_import
-!/bioseqdb_pg
+!/bioseqdb-import
+!/bioseqdb-pg
 !/CMakeLists.txt
