@@ -172,6 +172,42 @@ char* NucleotideSequence::to_text_malloc() const {
     return text;
 }
 
+bool operator==(const NucleotideSequence& left, const NucleotideSequence& right) {
+    // TODO: Optimize to avoid allocating.
+    char* left_str = left.to_text_malloc();
+    char* right_str = right.to_text_malloc();
+    bool equal = strcmp(left_str, right_str) == 0;
+    free(left_str);
+    free(right_str);
+    return equal;
+}
+
+bool operator!=(const NucleotideSequence& left, const NucleotideSequence& right) {
+    return !(left == right);
+}
+
+bool operator<(const NucleotideSequence& left, const NucleotideSequence& right) {
+    // TODO: Optimize to avoid allocating.
+    char* left_str = left.to_text_malloc();
+    char* right_str = right.to_text_malloc();
+    bool less = strcmp(left_str, right_str) < 0;
+    free(left_str);
+    free(right_str);
+    return less;
+}
+
+bool operator<=(const NucleotideSequence& left, const NucleotideSequence& right) {
+    return !(right < left);
+}
+
+bool operator>(const NucleotideSequence& left, const NucleotideSequence& right) {
+    return right < left;
+}
+
+bool operator>=(const NucleotideSequence& left, const NucleotideSequence& right) {
+    return !(left < right);
+}
+
 NucleotideSequence* nuclseq_from_text(std::string_view str) {
     uint32_t holes_num = calculate_num_of_holes(str);
     NucleotideSequence* nucls = alloc_raw_nucls(holes_num, str.size());

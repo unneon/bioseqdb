@@ -64,6 +64,61 @@ Datum nuclseq_out(PG_FUNCTION_ARGS) {
     PG_RETURN_CSTRING(nucls->to_text_palloc());
 }
 
+PG_FUNCTION_INFO_V1(nuclseq_eq);
+Datum nuclseq_eq(PG_FUNCTION_ARGS) {
+    auto lhs = reinterpret_cast<const NucleotideSequence*>(PG_DETOAST_DATUM(PG_GETARG_POINTER(0)));
+    auto rhs = reinterpret_cast<const NucleotideSequence*>(PG_DETOAST_DATUM(PG_GETARG_POINTER(1)));
+    PG_RETURN_BOOL(*lhs == *rhs);
+}
+
+PG_FUNCTION_INFO_V1(nuclseq_ne);
+Datum nuclseq_ne(PG_FUNCTION_ARGS) {
+    auto lhs = reinterpret_cast<const NucleotideSequence*>(PG_DETOAST_DATUM(PG_GETARG_POINTER(0)));
+    auto rhs = reinterpret_cast<const NucleotideSequence*>(PG_DETOAST_DATUM(PG_GETARG_POINTER(1)));
+    PG_RETURN_BOOL(*lhs != *rhs);
+}
+
+PG_FUNCTION_INFO_V1(nuclseq_lt);
+Datum nuclseq_lt(PG_FUNCTION_ARGS) {
+    auto lhs = reinterpret_cast<const NucleotideSequence*>(PG_DETOAST_DATUM(PG_GETARG_POINTER(0)));
+    auto rhs = reinterpret_cast<const NucleotideSequence*>(PG_DETOAST_DATUM(PG_GETARG_POINTER(1)));
+    PG_RETURN_BOOL(*lhs < *rhs);
+}
+
+PG_FUNCTION_INFO_V1(nuclseq_le);
+Datum nuclseq_le(PG_FUNCTION_ARGS) {
+    auto lhs = reinterpret_cast<const NucleotideSequence*>(PG_DETOAST_DATUM(PG_GETARG_POINTER(0)));
+    auto rhs = reinterpret_cast<const NucleotideSequence*>(PG_DETOAST_DATUM(PG_GETARG_POINTER(1)));
+    PG_RETURN_BOOL(*lhs <= *rhs);
+}
+
+PG_FUNCTION_INFO_V1(nuclseq_gt);
+Datum nuclseq_gt(PG_FUNCTION_ARGS) {
+    auto lhs = reinterpret_cast<const NucleotideSequence*>(PG_DETOAST_DATUM(PG_GETARG_POINTER(0)));
+    auto rhs = reinterpret_cast<const NucleotideSequence*>(PG_DETOAST_DATUM(PG_GETARG_POINTER(1)));
+    PG_RETURN_BOOL(*lhs > *rhs);
+}
+
+PG_FUNCTION_INFO_V1(nuclseq_ge);
+Datum nuclseq_ge(PG_FUNCTION_ARGS) {
+    auto lhs = reinterpret_cast<const NucleotideSequence*>(PG_DETOAST_DATUM(PG_GETARG_POINTER(0)));
+    auto rhs = reinterpret_cast<const NucleotideSequence*>(PG_DETOAST_DATUM(PG_GETARG_POINTER(1)));
+    PG_RETURN_BOOL(*lhs >= *rhs);
+}
+
+PG_FUNCTION_INFO_V1(nuclseq_cmp);
+Datum nuclseq_cmp(PG_FUNCTION_ARGS) {
+    auto lhs = reinterpret_cast<const NucleotideSequence*>(PG_DETOAST_DATUM(PG_GETARG_POINTER(0)));
+    auto rhs = reinterpret_cast<const NucleotideSequence*>(PG_DETOAST_DATUM(PG_GETARG_POINTER(1)));
+    // TODO: Optimize to avoid comparing twice.
+    if (*lhs < *rhs)
+        PG_RETURN_INT32(-1);
+    else if (*lhs == *rhs)
+        PG_RETURN_INT32(0);
+    else
+        PG_RETURN_INT32(1);
+}
+
 PG_FUNCTION_INFO_V1(nuclseq_len);
 Datum nuclseq_len(PG_FUNCTION_ARGS) {
     auto nucls = reinterpret_cast<const NucleotideSequence*>(PG_DETOAST_DATUM(PG_GETARG_POINTER(0)));

@@ -40,6 +40,13 @@ struct NucleotideSequence {
 
 NucleotideSequence* nuclseq_from_text(std::string_view str);
 
+bool operator==(const NucleotideSequence& left, const NucleotideSequence& right);
+bool operator!=(const NucleotideSequence& left, const NucleotideSequence& right);
+bool operator<(const NucleotideSequence& left, const NucleotideSequence& right);
+bool operator<=(const NucleotideSequence& left, const NucleotideSequence& right);
+bool operator>(const NucleotideSequence& left, const NucleotideSequence& right);
+bool operator>=(const NucleotideSequence& left, const NucleotideSequence& right);
+
 static inline size_t pac_byte_size(size_t x) { return x / 4 + (x % 4 != 0 ? 1 : 0); }
 
 static inline int32_t nuclcode_from_char(char chr) {

@@ -18,6 +18,125 @@ CREATE TYPE nuclseq (
     output = nuclseq_out
 );
 
+CREATE FUNCTION nuclseq_eq(NUCLSEQ, NUCLSEQ)
+    RETURNS BOOLEAN
+    AS 'MODULE_PATHNAME'
+    LANGUAGE C IMMUTABLE STRICT;
+
+CREATE FUNCTION nuclseq_ne(NUCLSEQ, NUCLSEQ)
+    RETURNS BOOLEAN
+    AS 'MODULE_PATHNAME'
+    LANGUAGE C IMMUTABLE STRICT;
+
+CREATE FUNCTION nuclseq_lt(NUCLSEQ, NUCLSEQ)
+    RETURNS BOOLEAN
+    AS 'MODULE_PATHNAME'
+    LANGUAGE C IMMUTABLE STRICT;
+
+CREATE FUNCTION nuclseq_le(NUCLSEQ, NUCLSEQ)
+    RETURNS BOOLEAN
+    AS 'MODULE_PATHNAME'
+    LANGUAGE C IMMUTABLE STRICT;
+
+CREATE FUNCTION nuclseq_gt(NUCLSEQ, NUCLSEQ)
+    RETURNS BOOLEAN
+    AS 'MODULE_PATHNAME'
+    LANGUAGE C IMMUTABLE STRICT;
+
+CREATE FUNCTION nuclseq_ge(NUCLSEQ, NUCLSEQ)
+    RETURNS BOOLEAN
+    AS 'MODULE_PATHNAME'
+    LANGUAGE C IMMUTABLE STRICT;
+
+CREATE FUNCTION nuclseq_cmp(NUCLSEQ, NUCLSEQ)
+    RETURNS INTEGER
+    AS 'MODULE_PATHNAME'
+    LANGUAGE C IMMUTABLE STRICT;
+
+CREATE OPERATOR = (
+    LEFTARG = NUCLSEQ,
+    RIGHTARG = NUCLSEQ,
+    PROCEDURE = nuclseq_eq,
+    COMMUTATOR = '=',
+    NEGATOR = '<>',
+    RESTRICT = eqsel,
+    JOIN = eqjoinsel,
+    HASHES, MERGES
+);
+
+CREATE OPERATOR <> (
+    LEFTARG = NUCLSEQ,
+    RIGHTARG = NUCLSEQ,
+    PROCEDURE = nuclseq_ne,
+    COMMUTATOR = '<>',
+    NEGATOR = '=',
+    RESTRICT = neqsel,
+    JOIN = neqjoinsel
+);
+
+CREATE OPERATOR < (
+    LEFTARG = NUCLSEQ,
+    RIGHTARG = NUCLSEQ,
+    PROCEDURE = nuclseq_lt,
+    COMMUTATOR = >,
+    NEGATOR = >=,
+    RESTRICT = scalarltsel,
+    JOIN = scalarltjoinsel
+);
+
+CREATE OPERATOR <= (
+    LEFTARG = NUCLSEQ,
+    RIGHTARG = NUCLSEQ,
+    PROCEDURE = nuclseq_le,
+    COMMUTATOR = >=,
+    NEGATOR = >,
+    RESTRICT = scalarltsel,
+    JOIN = scalarltjoinsel
+);
+
+CREATE OPERATOR > (
+    LEFTARG = NUCLSEQ,
+    RIGHTARG = NUCLSEQ,
+    PROCEDURE = nuclseq_gt,
+    COMMUTATOR = <,
+    NEGATOR = <=,
+    RESTRICT = scalargtsel,
+    JOIN = scalargtjoinsel
+);
+
+CREATE OPERATOR >= (
+    LEFTARG = NUCLSEQ,
+    RIGHTARG = NUCLSEQ,
+    PROCEDURE = nuclseq_ge,
+    COMMUTATOR = <=,
+    NEGATOR = <,
+    RESTRICT = scalargtsel,
+    JOIN = scalargtjoinsel
+);
+
+CREATE OPERATOR CLASS nuclseq_btree_operators
+    DEFAULT FOR TYPE NUCLSEQ
+    USING btree
+    AS
+        OPERATOR 1 <,
+        OPERATOR 2 <=,
+        OPERATOR 3 =,
+        OPERATOR 4 >=,
+        OPERATOR 5 >,
+        FUNCTION 1 nuclseq_cmp(NUCLSEQ, NUCLSEQ);
+
+CREATE FUNCTION nuclseq_hash(NUCLSEQ)
+    RETURNS INTEGER
+    AS 'hashvarlena'
+    LANGUAGE INTERNAL IMMUTABLE;
+
+CREATE OPERATOR CLASS nuclseq_hash_operators
+    DEFAULT FOR TYPE NUCLSEQ
+    USING hash
+    AS
+        OPERATOR 1 =,
+        FUNCTION 1 nuclseq_hash(NUCLSEQ);
+
 CREATE FUNCTION nuclseq_len(NUCLSEQ)
     RETURNS INTEGER
     AS 'MODULE_PATHNAME'
