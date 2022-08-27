@@ -213,7 +213,7 @@ NucleotideSequence* nuclseq_from_text(std::string_view str) {
 
     // libbwa requires random values inside holes, but again we want them to be deterministic => lcg
     std::minstd_rand rng(holes_num ^ str.size());
-    bntamb1_t* hole = nucls->holes();
+    bntamb1_t* hole = nucls->holes() - 1;
     char prev_chr = 0;
 
     for(uint32_t idx = 0 ; idx < str.size() ; idx++) {
