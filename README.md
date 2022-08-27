@@ -2,7 +2,7 @@
 
 ## Docker
 
-Docker can be used to quickly spin up a PostgreSQL instance with the extension installed. To do so, run `docker run -d --name bioseqdb -e POSTGRES_PASSWORD=password -v bioseqdb:/var/lib/postgresql/data -p 5432:5432 unneon/bioseqdb`. This will create and launch a instance in the background, to which you can connect using hostname `localhost`, port `5432`, username `postgres`, password `password` and database `postgres`. The data volume is persistent across reboots, and the container can be started again using `docker start bioseqdb`.
+Docker can be used to quickly spin up a PostgreSQL instance with the extension installed. To do so, run `docker run -d --name bioseqdb -e POSTGRES_PASSWORD=password -p 5432:5432 unneon/bioseqdb`. This will create and launch a instance in the background, to which you can connect using hostname `localhost`, port `5432`, username `postgres`, password `password` and database `postgres`. The data volume is persistent across reboots, and the container can be started again using `docker start bioseqdb`.
 
 ## Development
 
