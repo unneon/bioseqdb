@@ -3,11 +3,11 @@ on: [push]
 jobs:
   test:
     name: Test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v2
       - name: Install Postgres
-        run: sudo apt-get install -y postgresql postgresql-server-dev-all libpq-dev
+        run: sudo apt-get update && sudo apt-get install -y postgresql postgresql-server-dev-14 libpq-dev python3-psycopg2
       - name: Install bioinformatics libraries (cache)
         id: cache-bioinformatics
         uses: actions/cache@v3
@@ -26,8 +26,16 @@ jobs:
           find bwa htslib -name "*.h" | xargs cp --parents -t cache-bioinformatics/include
       - name: Install bioinformatics libraries (install)
         run: sudo cp -r cache-bioinformatics/* /usr/local/
-      - name: Build Postgres extension
+      - name: Build extension
         run: mkdir build && cd build && cmake .. && make
+      - name: Install extension
+        run: cd build && sudo make install
+      - name: Launch Postgres instance
+        run: sudo systemctl start postgresql && sudo -u postgres psql -c "CREATE USER runner SUPERUSER;"
+      - name: Test extension
+        run: python test/run.py
+        env:
+          DB_URI: postgres:///postgres
   docker:
     name: Docker
     needs: test
@@ -36,3 +44,11 @@ jobs:
       - uses: actions/checkout@v2
       - name: Build Docker image
         run: docker build -t bioseqdb .
+      - name: Install test dependencies
+        run: sudo apt-get install -y python3-psycopg2
+      - name: Launch Docker container
+        run: sudo docker run -d -e POSTGRES_PASSWORD=password -p 5432:5432 bioseqdb && sleep 5
+      - name: Test extension on Docker
+        run: python test/run.py
+        env:
+          DB_URI: postgres://postgres:password@localhost/
