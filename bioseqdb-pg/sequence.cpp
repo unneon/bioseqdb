@@ -58,7 +58,7 @@ uint32_t calculate_num_of_holes(std::string_view str) {
 
 NucleotideSequence* alloc_raw_nucls(uint32_t holes_num, uint32_t len) {
     // Postgresql requires logicaly same values to have same bits, so we use zero alloc to fill paddings of bntamb1_t.
-    const auto size = 4 * sizeof(uint32_t) + holes_num * sizeof(bntamb1_t) + pac_byte_size(len);
+    const auto size = 3 * sizeof(uint32_t) + holes_num * sizeof(bntamb1_t) + pac_byte_size(len);
     const auto ptr = static_cast<NucleotideSequence*>(palloc0(size));
 
     SET_VARSIZE(ptr, size);
