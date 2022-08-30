@@ -191,7 +191,7 @@ CREATE FUNCTION bwa_opts(
 		pen_clip3, pen_clip5, zdrop, bandwidth,
 		o_del, o_ins, e_del, e_ins
 	) as opts
-$$ LANGUAGE SQL IMMUTABLE STRICT;
+$$ LANGUAGE SQL IMMUTABLE;
 
 CREATE TYPE bwa_result AS (
     ref_id BIGINT,
