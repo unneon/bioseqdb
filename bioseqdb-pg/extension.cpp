@@ -267,7 +267,8 @@ Tuplestorestate* create_tuplestore(ReturnSetInfo* rsi, TupleDesc& tupledesc) {
     tupledesc = CreateTupleDescCopy(tupledesc);
     tupledesc = BlessTupleDesc(tupledesc);
 
-    Tuplestorestate* tupstore = tuplestore_begin_heap(SFRM_Materialize_Random, false, work_mem);
+    bool support_random_access = (rsi->allowedModes & SFRM_Materialize_Random) != 0;
+    Tuplestorestate* tupstore = tuplestore_begin_heap(support_random_access, false, work_mem);
     MemoryContextSwitchTo(old_ctx);
 
     return tupstore;
