@@ -18,7 +18,7 @@ jobs:
         if: steps.cache-bioinformatics.outputs.cache-hit != 'true'
         run: >
           git clone --depth 1 --single-branch --recursive "https://github.com/samtools/htslib.git" &&
-          git clone --depth 1 --single-branch "https://github.com/lh3/bwa.git" &&
+          git clone --depth 1 --single-branch --branch Apache2 "https://github.com/lh3/bwa.git" &&
           cd htslib && autoreconf -i && ./configure --disable-bz2 --disable-lzma && make CFLAGS="-g -O2 -fPIC" lib-static && cd .. &&
           cd bwa && make CFLAGS="-g -O2 -fPIC" libbwa.a && cd .. &&
           mkdir -p cache-bioinformatics/lib cache-bioinformatics/include &&
