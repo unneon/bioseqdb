@@ -20,7 +20,7 @@ jobs:
           git clone --depth 1 --single-branch --recursive "https://github.com/samtools/htslib.git" &&
           git clone --depth 1 --single-branch --branch Apache2 "https://github.com/lh3/bwa.git" &&
           cd htslib && autoreconf -i && ./configure --disable-bz2 --disable-lzma && make CFLAGS="-g -O2 -fPIC" lib-static && cd .. &&
-          cd bwa && make CFLAGS="-g -O2 -fPIC" libbwa.a && cd .. &&
+          cd bwa && sed -i 's/ malloc_wrap.o/ malloc_wrap.o\\/' Makefile && sed -i 's/AOBJS=//' Makefile && sed -i '/rle_auxtab/d' rle.h && make CFLAGS="-g -O2 -fPIC" libbwa.a && cd .. &&
           mkdir -p cache-bioinformatics/lib cache-bioinformatics/include &&
           cp htslib/libhts.a bwa/libbwa.a cache-bioinformatics/lib &&
           find bwa htslib -name "*.h" | xargs cp --parents -t cache-bioinformatics/include
@@ -47,7 +47,7 @@ jobs:
       - name: Install test dependencies
         run: sudo apt-get install -y python3-psycopg2
       - name: Launch Docker container
-        run: sudo docker run -d -e POSTGRES_PASSWORD=password -p 5432:5432 bioseqdb && sleep 8
+        run: sudo docker run -d -e POSTGRES_PASSWORD=password -p 5432:5432 bioseqdb && sleep 5
       - name: Test extension on Docker
         run: python test/run.py
         env:
