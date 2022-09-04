@@ -47,7 +47,7 @@ jobs:
       - name: Install test dependencies
         run: sudo apt-get install -y python3-psycopg2
       - name: Launch Docker container
-        run: sudo docker run -d -e POSTGRES_PASSWORD=password -p 5432:5432 bioseqdb && sleep 5
+        run: sudo docker run -d -e POSTGRES_PASSWORD=password -p 5432:5432 bioseqdb && sleep 8
       - name: Test extension on Docker
         run: python test/run.py
         env:
