@@ -9,8 +9,6 @@ find_program(PG_CONFIG pg_config)
 execute_process(COMMAND ${PG_CONFIG} --pkglibdir OUTPUT_VARIABLE PG_CONFIG_PKGLIBDIR OUTPUT_STRIP_TRAILING_WHITESPACE)
 execute_process(COMMAND ${PG_CONFIG} --sharedir OUTPUT_VARIABLE PG_CONFIG_SHAREDIR OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-find_package(BZip2 REQUIRED)
-
 find_library(BWA_LIBRARIES bwa REQUIRED)
 find_library(HTS_LIBRARIES hts REQUIRED)
 
@@ -24,8 +22,6 @@ add_executable(bioseqdb-import
         )
 
 target_include_directories(bioseqdb PRIVATE ${PostgreSQL_TYPE_INCLUDE_DIR})
-target_link_libraries(bioseqdb PRIVATE ${PostgreSQL_LIBRARIES})
-target_link_libraries(bioseqdb PRIVATE ${BZIP2_LIBRARIES})
 target_link_libraries(bioseqdb PRIVATE ${HTS_LIBRARIES} ${BWA_LIBRARIES})
 target_include_directories(bioseqdb-import PRIVATE ${PostgreSQL_INCLUDE_DIRS})
 target_link_libraries(bioseqdb-import PRIVATE ${PostgreSQL_LIBRARIES})
