@@ -55,7 +55,7 @@ inline namespace {
     std::string extract_reference_subseq(bwaidx_t* index, int64_t ref_begin, int64_t ref_end) {
         // TODO directly return PgNucleotideSequence (low priority).
         std::string subseq(ref_end - ref_begin, '?');
-        for (int64_t i = 0; i < subseq.size(); ++i)
+        for (size_t i = 0; i < subseq.size(); ++i)
             subseq[i] = "ACGT"[pac_raw_get(index->pac, ref_begin + i)];
         // TODO: Use binary search to look for relevant holes (low priority).
         for (bntamb1_t* hole = index->bns->ambs; hole != index->bns->ambs + index->bns->n_holes; ++hole) {
@@ -77,11 +77,11 @@ inline namespace {
     }
 }
 
-BwaIndex::BwaIndex(): index(nullptr), pac_forward(), holes(), annotations(), options(mem_opt_init()) {}
+BwaIndex::BwaIndex(): options(mem_opt_init()), pac_forward(), holes(), annotations(), index(nullptr) {}
 
 void BwaIndex::add_ref_sequence(int64_t id, const NucleotideSequence& seq) {
     int64_t offset = pac_forward.size() * 4;
-    auto& ref = annotations.emplace_back(bntann1_t {
+    annotations.emplace_back(bntann1_t {
         .offset = offset,
         .len = (int32_t) seq.len,
         .n_ambs = (int32_t) seq.holes_num,

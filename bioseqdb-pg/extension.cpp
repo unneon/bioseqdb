@@ -2,19 +2,21 @@
 #include <array>
 #include <chrono>
 #include <charconv>
-#include <string>
 #include <string_view>
 #include <optional>
-#include <stdint.h>
+#include <cstdint>
 #include <cstdlib>
 
 extern "C" {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wregister"
 #include <postgres.h>
 #include <fmgr.h>
 #include <funcapi.h>
 #include <miscadmin.h>
 #include <executor/spi.h>
 #include <catalog/pg_type.h>
+#pragma GCC diagnostic pop
 }
 
 #include "bwa.h"
@@ -275,7 +277,6 @@ Tuplestorestate* create_tuplestore(ReturnSetInfo* rsi, TupleDesc& tupledesc) {
 }
 
 HeapTuple build_tuple_bwa(std::optional<int64_t> query_id, const BwaMatch& match, TupleDesc& tupledesc) {
-    std::array<bool, 15> nulls;
     std::array<Datum, 15> values { {
         Int64GetDatum(match.ref_id),
         PointerGetDatum(nuclseq_from_text(match.ref_subseq)),
@@ -294,7 +295,7 @@ HeapTuple build_tuple_bwa(std::optional<int64_t> query_id, const BwaMatch& match
         Int32GetDatum(match.score),
     } };
 
-    nulls.fill(false);
+    std::array<bool, 15> nulls{};
     nulls[5] = !query_id.has_value();
 
     return heap_form_tuple(tupledesc, values.data(), nulls.data());
@@ -323,7 +324,6 @@ Datum nuclseq_search_bwa(PG_FUNCTION_ARGS) {
     SPI_finish();
 
     Tuplestorestate* ret_tupstore = create_tuplestore(rsi, ret_tupdesc);
-    AttInMetadata* attr_input_meta = TupleDescGetAttInMetadata(ret_tupdesc);
 
     std::vector<BwaMatch> aligns = bwa.align_sequence(*nucls);
 
@@ -355,7 +355,6 @@ Datum nuclseq_multi_search_bwa(PG_FUNCTION_ARGS) {
     Oid nuclseq_oid = TupleDescAttr(ret_tupdesc, 1)->atttypid;
     BwaIndex bwa = bwa_index_from_query(reference_sql, opts, nuclseq_oid);
     Tuplestorestate* ret_tupstore = create_tuplestore(rsi, ret_tupdesc);
-    AttInMetadata* attr_input_meta = TupleDescGetAttInMetadata(ret_tupdesc);
 
     iterate_nuclseq_table(query_sql, nuclseq_oid, [&](auto id, auto nuclseq){
         std::vector<BwaMatch> aligns = bwa.align_sequence(*nuclseq);
