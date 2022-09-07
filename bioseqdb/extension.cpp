@@ -129,6 +129,9 @@ Datum nuclseq_content(PG_FUNCTION_ARGS) {
         raise_pg_error(ERRCODE_INVALID_PARAMETER_VALUE,
                 errmsg("invalid nucleotide in nuclseq_content: '%s'", needle.data()));
     }
+    if (nucls->length() == 0) {
+        PG_RETURN_NULL();
+    }
 
     auto matches = static_cast<double>(nucls->occurences(needle[0]));
     PG_RETURN_FLOAT8(matches / nucls->length());
