@@ -93,5 +93,20 @@ def nuclseq_reject_invalid_utf8(sql):
         failed = True
     assert failed
 
+@test
+def nuclseq_length_zero(sql):
+    sql.execute("SELECT nuclseq_len('');")
+    assert sql.fetchone() == (0,)
+
+@test
+def nuclseq_length_one(sql):
+    sql.execute("SELECT nuclseq_len('A');")
+    assert sql.fetchone() == (1,)
+
+@test
+def nuclseq_length_ten(sql):
+    sql.execute("SELECT nuclseq_len('ACGTNRYKMS');")
+    assert sql.fetchone() == (10,)
+
 _conn.close()
 sys.exit(_status)
