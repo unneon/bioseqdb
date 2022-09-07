@@ -108,5 +108,67 @@ def nuclseq_length_ten(sql):
     sql.execute("SELECT nuclseq_len('ACGTNRYKMS');")
     assert sql.fetchone() == (10,)
 
+@test
+def nuclseq_content_zero(sql):
+    sql.execute("SELECT nuclseq_content('ACACACAC', 'G');")
+    assert sql.fetchone() == (0.0,)
+
+@test
+def nuclseq_content_one(sql):
+    sql.execute("SELECT nuclseq_content('GGGGGGGG', 'G');")
+    assert sql.fetchone() == (1.0,)
+
+@test
+def nuclseq_content_half(sql):
+    sql.execute("SELECT nuclseq_content('ACACACAC', 'A');")
+    assert sql.fetchone() == (0.5,)
+
+@test
+def nuclseq_content_with_wildcards(sql):
+    sql.execute("SELECT nuclseq_content('ANNNANNN', 'A');")
+    assert sql.fetchone() == (0.25,)
+
+@test
+def nuclseq_content_with_subsets(sql):
+    sql.execute("SELECT nuclseq_content('ARRRARRR', 'A');")
+    assert sql.fetchone() == (0.25,)
+
+@test
+def nuclseq_content_of_wildcard(sql):
+    sql.execute("SELECT nuclseq_content('ARNNARNN', 'N');")
+    assert sql.fetchone() == (0.5,)
+
+@test
+def nuclseq_content_of_subset(sql):
+    sql.execute("SELECT nuclseq_content('ARRRARRR', 'R');")
+    assert sql.fetchone() == (0.75,)
+
+@test
+def nuclseq_content_null_on_empty_sequence(sql):
+    sql.execute("SELECT nuclseq_content('', 'A');")
+    assert sql.fetchone() == (None,)
+
+@test
+def nuclseq_content_rejects_empty_needle(sql):
+    failed = False
+    try:
+        sql.execute("SELECT nuclseq_content('ACGT', '');")
+    except psycopg2.DataError as e:
+        assert "invalid nucleotide in nuclseq_content: ''" in e.pgerror
+        failed = True
+    assert failed
+
+# TODO: Test other invalid needles in nuclseq_content.
+
+@test
+def nuclseq_content_rejects_empty_needle_on_empty_sequence(sql):
+    failed = False
+    try:
+        sql.execute("SELECT nuclseq_content('', '');")
+    except psycopg2.DataError as e:
+        assert "invalid nucleotide in nuclseq_content: ''" in e.pgerror
+        failed = True
+    assert failed
+
 _conn.close()
 sys.exit(_status)
